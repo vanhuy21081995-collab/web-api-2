@@ -1,0 +1,10 @@
+body { background:#f5f7fb; }
+.stat-card { color:#fff; border-radius:14px; padding:20px; min-height:115px; box-shadow:0 4px 14px rgba(0,0,0,.08); }
+.stat-card h2 { margin:8px 0 0; font-weight:700; }
+.card { border:0; border-radius:14px; }
+.table th { white-space:nowrap; }
+.btn-action { margin-right:4px; }
+.badge-status { font-size:.8rem; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

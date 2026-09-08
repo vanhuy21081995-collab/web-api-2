@@ -1,0 +1,19 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Database local
+*.db
+*.sqlite3
+
+# Environment variables (chứa mật khẩu/config)
+.env
+
+# Editor settings
+.vscode/
+.idea/
