@@ -1,14 +1,22 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
 
+def get_student_by_id(db: Session, student_id: str):
+    return db.query(models.Student).filter(models.Student.id == student_id).first()
+
 def get_students(db: Session, search: str = "", skip: int = 0, limit: int = 10):
     query = db.query(models.Student)
     if search:
-        query = query.filter(
-            (models.Student.id.contains(search)) | (models.Student.name.contains(search))
-        )
+        # Sửa full_name -> name cho đồng bộ với model
+        query = query.filter(models.Student.name.contains(search))
+
     total = query.count()
-    students = query.offset(skip).limit(limit).all()
+    students = (
+        query.order_by(models.Student.id.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return total, students
 
 def create_student(db: Session, student: schemas.StudentCreate):
@@ -27,14 +35,14 @@ def create_student(db: Session, student: schemas.StudentCreate):
     return db_student
 
 def update_student(db: Session, student_id: str, student_data: schemas.StudentUpdate):
-    db_student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    db_student = get_student_by_id(db, student_id)
     if not db_student:
         return None
-    
+
     update_data = student_data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_student, key, value)
-    
+
     if db_student.paid_amount >= db_student.tuition:
         db_student.status = "Paid"
     elif db_student.paid_amount > 0:
@@ -47,9 +55,10 @@ def update_student(db: Session, student_id: str, student_data: schemas.StudentUp
     return db_student
 
 def delete_student(db: Session, student_id: str):
-    db_student = db.query(models.Student).filter(models.Student.id == student_id).first()
+    db_student = get_student_by_id(db, student_id)
     if db_student:
-        db.query(models.Payment).filter(models.Payment.student_id == student_id).delete()
+        # Thêm synchronize_session=False để xóa an toàn
+        db.query(models.Payment).filter(models.Payment.student_id == student_id).delete(synchronize_session=False)
         db.delete(db_student)
         db.commit()
         return True

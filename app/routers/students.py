@@ -25,8 +25,7 @@ def read_students(
 
 @router.post("", response_model=schemas.StudentResponse)
 def create_student(student: schemas.StudentCreate, db: Session = Depends(get_db)):
-    db_student = crud.get_student_by_id(db, student.id)
-    if db_student:
+    if crud.get_student_by_id(db, student.id):
         raise HTTPException(status_code=400, detail="Mã sinh viên đã tồn tại!")
     return crud.create_student(db, student)
 
@@ -39,7 +38,6 @@ def update_student(student_id: str, student: schemas.StudentUpdate, db: Session 
 
 @router.delete("/{student_id}")
 def delete_student(student_id: str, db: Session = Depends(get_db)):
-    success = crud.delete_student(db, student_id)
-    if not success:
+    if not crud.delete_student(db, student_id):
         raise HTTPException(status_code=404, detail="Không tìm thấy sinh viên!")
     return {"message": "Xóa sinh viên thành công!"}

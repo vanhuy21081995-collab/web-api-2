@@ -39,7 +39,7 @@ class PaymentResponse(BaseModel):
 
     class Config:
         from_attributes = True
-        
+
 class StatisticsResponse(BaseModel):
     total_students: int
     paid_students: int
